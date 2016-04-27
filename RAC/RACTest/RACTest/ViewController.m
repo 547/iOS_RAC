@@ -18,6 +18,8 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     [self textFild];
+    [self button];
+    [self gestureRecognizerTest];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -27,7 +29,7 @@
 
 
 /**
- *  
+ *  对textField事件的监听
  */
 -(void)textFild
 {
@@ -35,16 +37,56 @@
     textField.borderStyle = UITextBorderStyleRoundedRect;
     [self.view addSubview:textField];
     
-    [[textField rac_signalForControlEvents:UIControlEventEditingChanged]subscribeNext:^(id x) {
-        /**
-         *  x==就是textField
-         */
-        UITextField *te = (UITextField *)x;
-        NSLog(@"值改变啦,%@",te.text);
+//    [[textField rac_signalForControlEvents:UIControlEventEditingChanged]subscribeNext:^(id x) {
+//        /**
+//         *  x==就是textField
+//         */
+//        UITextField *te = (UITextField *)x;
+//        NSLog(@"值改变啦,%@",te.text);
+//    }];
+
+
+    /**
+     *       *  这个是监听textFiled的所有事件
+     *
+     *  @param x textField对象
+     *
+     *  @return <#return value description#>
+     */
+    [[textField rac_textSignal]subscribeNext:^(id x) {
+        NSLog(@"text");
+    }];
+
+}
+
+/**
+ *  button的事件监听
+ */
+-(void)button
+{
+    UIButton *button = [[UIButton alloc]initWithFrame:CGRectMake(30, 50, 60, 30)];
+    [self.view addSubview:button];
+    button.backgroundColor = [UIColor redColor];
+    
+    
+    [[button rac_signalForControlEvents:UIControlEventTouchUpInside] subscribeNext:^(id x) {
+        NSLog(@"点击button%@",x);
     }];
     
-    
+}
 
+/**
+ *  rac与手势
+ */
+-(void)gestureRecognizerTest
+{
+
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]init];
+    longPress.minimumPressDuration = 2;
+    [self.view addGestureRecognizer:longPress];
+    [[longPress rac_gestureSignal]subscribeNext:^(id x) {
+        NSLog(@"长按手势");
+    }];
 }
 
 @end
